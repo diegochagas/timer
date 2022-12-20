@@ -23,7 +23,11 @@ export function History() {
                 <td>Task</td>
                 <td>20 minutes</td>
                 <td>2 months ago</td>
-                <td>Done</td>
+                <td>
+                  <S.Status statusColor={td <= 3 && 'yellow' || td > 3 && td < 6 && 'red' || 'green'}>
+                    {td <= 3 && 'In progress' || td > 3 && td < 6 && 'Interrupted' || 'Done'}
+                  </S.Status>
+                </td>
               </tr>
             ))}
           </tbody>
