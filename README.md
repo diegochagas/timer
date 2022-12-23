@@ -1,6 +1,6 @@
 # Timer
 
-Project of a timer built with React.js, Typescript and Vite.js
+Project of a timer built with React.js, Typescript, Vite.js and React Hook Form.
 
 ## To run locally
 
