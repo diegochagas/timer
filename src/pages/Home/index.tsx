@@ -1,4 +1,4 @@
-import { Play } from 'phosphor-react'
+import { HandPalm, Play } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import * as zod from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,7 +21,8 @@ interface Cycle {
   id: string,
   task: string,
   minutesAmount: number,
-  startDate: Date 
+  startDate: Date,
+  interruptedDate?: Date
 }
 
 export function Home() {
@@ -89,6 +90,20 @@ export function Home() {
     reset()
   }
 
+  function handleInterruptCycle() {
+    setCycles(state => state.map(cycle => {
+      if (cycle.id === activeCycleId) {
+        return { ...cycle, interruptedDate: new Date() }
+      } else {
+        return cycle
+      }
+    }))
+    
+    setActiveCycleId(null)
+  }
+
+  console.log(cycles)
+
   return (
     <S.HomeContainer>
       <form onSubmit={handleSubmit(handleCreateNewCycle)}>
@@ -100,6 +115,7 @@ export function Home() {
             type="text"
             placeholder="Give a name to your project"
             list="task-suggestions"
+            disabled={!!activeCycle}
             {...register('task')}
           />
 
@@ -119,6 +135,7 @@ export function Home() {
             step={5}
             min={5}
             max={60}
+            disabled={!!activeCycle}
             {...register('minutesAmount', { valueAsNumber: true })}
           />
 
@@ -133,11 +150,19 @@ export function Home() {
           <span>{seconds[1]}</span>
         </S.CountDownContainer>
 
-        <S.StartCountdownButton type="submit" disabled={isSubmitDisabled}>
-          <Play size={24} />
+        {activeCycle ? (
+          <S.StopCountdownButton type="button" onClick={handleInterruptCycle}>
+            <HandPalm size={24} />
 
-          Start
-        </S.StartCountdownButton>
+            Interrupt
+          </S.StopCountdownButton>
+        ) : (
+          <S.StartCountdownButton type="submit" disabled={isSubmitDisabled}>
+            <Play size={24} />
+
+            Start
+          </S.StartCountdownButton>
+        )}
       </form>
     </S.HomeContainer>
   )
