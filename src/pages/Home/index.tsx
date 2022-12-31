@@ -11,18 +11,19 @@ const newCycleFormValidationSchema = zod.object({
   task: zod.string().min(1, 'report the task'),
   minutesAmount: zod
     .number()
-    .min(5, 'The cicle must be at least 5 minutes')
+    .min(1, 'The cicle must be at least 1 minutes')
     .max(60, 'The cicle must be a maximum of 60 minutes')
 })
 
 type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
 
 interface Cycle {
-  id: string,
-  task: string,
-  minutesAmount: number,
-  startDate: Date,
+  id: string
+  task: string
+  minutesAmount: number
+  startDate: Date
   interruptedDate?: Date
+  finishedDate?: Date
 }
 
 export function Home() {
@@ -51,21 +52,37 @@ export function Home() {
   
   const task = watch('task')
   const minutesAmount = watch('minutesAmount')
-  const isSubmitDisabled = !task || !minutesAmount || minutesAmount < 5
+  const isSubmitDisabled = !task || !minutesAmount || minutesAmount < 1
 
   useEffect(() => {
     let interval: number
 
     if (activeCycle) {
       interval = setInterval(() => {
-        setAmountSecondsPassed(differenceInSeconds(new Date(), activeCycle.startDate))
+        const secondsDifference = differenceInSeconds(new Date(), activeCycle.startDate)
+
+        if (secondsDifference >= totalSeconds) {
+          setCycles(state => state.map(cycle => {
+            if (cycle.id === activeCycleId) {
+              return { ...cycle, finishedDate: new Date() }
+            } else {
+              return cycle
+            }
+          }))
+
+          setAmountSecondsPassed(totalSeconds)
+
+          clearInterval(interval)
+        } else {
+          setAmountSecondsPassed(secondsDifference)
+        }
       }, 1000)
     }
 
     return () => {
       clearInterval(interval)
     }
-  }, [activeCycle])
+  }, [activeCycle, totalSeconds, activeCycleId])
 
   useEffect(() => {
     if (activeCycle) {
@@ -102,8 +119,6 @@ export function Home() {
     setActiveCycleId(null)
   }
 
-  console.log(cycles)
-
   return (
     <S.HomeContainer>
       <form onSubmit={handleSubmit(handleCreateNewCycle)}>
@@ -132,8 +147,8 @@ export function Home() {
             type="number"
             id="minutesAmount"
             placeholder="00"
-            step={5}
-            min={5}
+            step={1}
+            min={1}
             max={60}
             disabled={!!activeCycle}
             {...register('minutesAmount', { valueAsNumber: true })}
