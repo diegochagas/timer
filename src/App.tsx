@@ -5,13 +5,16 @@ import { Router } from './Router'
 
 import { defaultTheme } from './styles/themes/default'
 import { GlobalStyle } from './styles/global'
+import { CyclesContextProvider } from './contexts/CyclesContext'
 
 export function App() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <HashRouter>
-        <Router />
+        <CyclesContextProvider>
+          <Router />
+        </CyclesContextProvider>
       </HashRouter>
 
       <GlobalStyle />
