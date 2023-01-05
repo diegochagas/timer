@@ -51,7 +51,7 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps){
   })
 
   useEffect(() => {
-    const stateJSON = JSON.stringify(cyclesState)
+    const stateJSON = JSON.stringify(cyclesState || cyclesStateInitialValue)
 
     localStorage.setItem('@timer:cycles-state-1.0.0', stateJSON)
   }, [cyclesState])
