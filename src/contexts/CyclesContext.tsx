@@ -26,10 +26,12 @@ interface CyclesContextProviderProps {
 }
 
 export function CyclesContextProvider({ children }: CyclesContextProviderProps){
-  const [cyclesState, dispatch] = useReducer(cyclesReducer, {
+  const cyclesStateInitialValue = {
     cycles: [],
     activeCycleId: null
-  }, () => {
+  }
+
+  const [cyclesState, dispatch] = useReducer(cyclesReducer, cyclesStateInitialValue, () => {
     const storedStateAsJSON = localStorage.getItem('@timer:cycles-state-1.0.0')
 
     if (storedStateAsJSON) {
@@ -37,7 +39,7 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps){
     }
   })
 
-  const { cycles, activeCycleId } = cyclesState
+  const { cycles, activeCycleId } = cyclesState || cyclesStateInitialValue
   const activeCycle = cycles.find(cycle => cycle.id === activeCycleId)
 
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(() => {
